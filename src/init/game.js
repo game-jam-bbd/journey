@@ -3,9 +3,9 @@ import { GLTFLoader, Sky, Water } from 'three/examples/jsm/Addons.js'
 import { DirectionalLight } from 'three/src/lights/DirectionalLight.js'
 import { MathUtils } from 'three/src/math/MathUtils.js'
 import { initializeGame } from './init.js'
-import { setupControls } from '../engine/controls.js'
+import { setupControls, keys } from '../engine/controls.js'
 import { createEnemy, createCoin, createDolphin } from '../engine/createObstacle.js'
-
+import * as THREE from 'three';
 import { PlaneGeometry, PMREMGenerator, RepeatWrapping, TextureLoader, Vector3 } from 'three'
 
 
@@ -19,52 +19,116 @@ export default class Game {
   audioManager;
 
   constructor () {
+    this.enemies = [];
+    this.coins = [];
+    this.ships = [];
+    this.frames = 0;
+    this.spawnRate = 250;
+    this.clock = new THREE.Clock();
     this.gameInit = initializeGame();
     this._initializeScene()
   }
 
-  update (time) {
-    if (this.ship) {
-      this.ship.position.z += 0.01
-      this.camera.lookAt(this.ship.position)
+  _animate(time) {
+    if (!this.renderer) return;
+
+    this.renderer.render(scene, camera);
+
+    this.ocean.material.uniforms[ 'time' ].value += 0.006;
+
+    // movement update
+    this.dolphin.velocity.x = 0; // for every frame, reset velocity
+    this.dolphin.velocity.z = 0;
+
+    if (keys.a.pressed) this.dolphin.velocity.x = -0.1;
+    else if (keys.d.pressed) this.dolphin.velocity.x = 0.1;
+
+    if (keys.w.pressed) this.dolphin.velocity.z = -0.09;
+    else if (keys.s.pressed) this.dolphin.velocity.z = 0.09;
+
+    if (keys.space.pressed) this.dolphin.velocity.y = -0.75;
+
+    this.camera.position.set(this.dolphin.position.x, this.dolphin.position.y + 4, this.dolphin.position.z + 8);
+    //camera.lookAt(dolphin.position.x, dolphin.position.y + 2, dolphin.position.z + 5);
+    const deltaTime = this.clock.getDelta();
+    this.dolphin.update(deltaTime);
+    const time = performance.now() * 0.001;
+    //controls.target.set(cube.position.x, cube.position.y, cube.position.z);
+    this.enemies.forEach(enemy => {
+        if (enemy.position.z >= 100) {
+            scene.remove(enemy);
+            const index = this.enemies.indexOf(enemy);
+            this.enemies.splice(index, 1);
+        }
+        else {
+            enemy.update();
+            enemy.rotation.x = time * 0.25;
+            enemy.rotation.z = time * 0.51;
+            if (this._boxCollision({ box1: this.dolphin, box2: enemy })) {
+                console.log("Game over chief!");
+                renderer.setAnimationLoop(null);
+            }
+        }
+    });
+
+    this.coins.forEach(coin => {
+        if (coin.position.z >= 100) {
+            //scene.remove(coin);
+            coin.removeCoin();
+            const index = this.coins.indexOf(coin);
+            this.coins.splice(index, 1);
+        }
+        else {
+            coin.update();
+            if (this._coinCollision({ box: this.dolphin, coin: coin  })) {
+                console.log("Wabamba akfani");
+                coin.removeCoin();
+                const index = this.coins.indexOf(coin);
+                this.coins.splice(index, 1);
+            }
+        }
+    });
+
+    this.ships.forEach(ship => {
+        if (ship.position.z >= 100) {
+          this.scene.remove(ship);
+            const index = this.enemies.indexOf(ship);
+            this.ships.splice(index, 1);
+        }
+        else {
+          ship.update();
+          //ship.mesh.rotation.z = time * 0.51;
+          if (this._boxCollision({ box1: dolphin, box2: ship })) {
+            console.log("Game over chief!");
+            renderer.setAnimationLoop(null);
+          }
+        }
+    });
+
+    if (this.frames % this.spawnRate === 0) {
+        if (this.spawnRate > 10) this.spawnRate -= 10;
+
+        if (Math.random() > 0.5 && Math.random() < 0.5) {
+            const enemy = createEnemy();
+            this.scene.add(enemy);
+            this.enemies.push(enemy);
+        }
+        else {
+            if(Math.random() > 0.5 && Math.random() < 0.5) {
+                const coin = createCoin(scene);
+                this.coins.push(coin);
+            }
+            //else {
+            //    const ship = createShip(scene);
+            //    ships.push(ship);
+            //}
+        }
+            
     }
-    this.water.material.uniforms['time'].value += 1 / (60 * 10)
-    this.camera.position.z += 0.01
-
-    performance.now()
-
-    if (this.ship) {
-      time = performance.now() * 0.001
-      this.ship.position.y = Math.sin(2 * time) * 0.1 - 0.25
-      // this.ship.rotation.x = time * 0.3
-      // this.ship.rotation.z = time * 0.3
-    }
-
-    this._checkCollisions()
-    this._updateStatistics()
+    frames++;
   }
 
-  _keydown (event) {
-    switch (event.key) {
-      case 'ArrowLeft':
-        this.speedX = -1
-        break
-      case 'ArrowRight':
-        this.speedX = 1
-        break
-
-      default:
-        return
-    }
-  }
-
-  _keyup () {
-    this.speedX = 0
-  }
-
-  _updatePlane () {}
-
-  _checkCollisions () {}
+  //_checkCollisions () {}
   _boxCollision = ({ box1, box2 }) => {
     const xCollision = box1.right >= box2.left && box1.left <= box2.right;
     const yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom;
@@ -95,8 +159,8 @@ export default class Game {
 
     setupControls();
     
-    await this.audioManager.loadBackgroundMusic("../../assets/music/m4.mpeg");
-    this.audioManager.playBackgroundMusic();
+    //await this.audioManager.loadBackgroundMusic("../../assets/music/m4.mpeg");
+    //this.audioManager.playBackgroundMusic();
     // this._createSun(this.scene, this.renderer)
     // this.scene.add(cube)
   }
