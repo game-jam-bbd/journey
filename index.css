@@ -2,4 +2,88 @@ body {
   background-color: #ffffff;
   margin: 0;
   overflow: hidden;
+}body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+#gameControls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#startButton {
+    background-color: #008CBA;
+}
+
+#startButton:hover {
+    background-color: #007B9A;
+}
+
+#pauseButton {
+    background-color: #f44336;
+}
+
+#pauseButton:hover {
+    background-color: #da190b;
+}
+
+#resumeButton {
+    background-color: #ff9800;
+}
+
+#resumeButton:hover {
+    background-color: #e68a00;
+}
+
+#stopButton {
+    background-color: #9E9E9E;
+}
+
+#stopButton:hover {
+    background-color: #7E7E7E;
+}
+
+#guiContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#guiContent {
+    text-align: center;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#guiContent h1 {
+    margin-bottom: 20px;
+}
+
+#guiContent button {
+    font-size: 20px;
+    padding: 15px 30px;
 }
