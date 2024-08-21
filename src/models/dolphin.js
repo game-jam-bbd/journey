@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Dolphin {
 
@@ -52,7 +52,7 @@ export class Dolphin {
 
     loadModel() {
         const loader = new GLTFLoader();
-        loader.load('../models/dolphin.glb', (gltf) => {
+        loader.load('../../assets/models/dolphin.glb', (gltf) => {
             this.mesh = gltf.scene;
             this.mixer = new THREE.AnimationMixer(this.mesh);
             this.swimAction = this.mixer.clipAction(gltf.animations[0]);

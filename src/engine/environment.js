@@ -23,7 +23,7 @@ export const createWater = (scene) => {
     return water;
 };
 
-export const createSky = () => {
+export const createSky = (scene) => {
     const sky = new Sky();
     sky.scale.setScalar(10000);
     scene.add(sky);

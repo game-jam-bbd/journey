@@ -20,10 +20,10 @@ export const initializeGame = () => {
     const dolphin = createDolphin(scene);
 
     const ocean = createWater(scene);
-    scene.add(ocean);
+    //scene.add(ocean);
 
-    const sky = createSky();
-    scene.add(sky);
+    const sky = createSky(scene);
+    //scene.add(sky);
 
     const sun = createSun(renderer, sky, ocean);
     scene.environment = sun;

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export class Ship {
 
@@ -50,7 +50,7 @@ export class Ship {
 
     loadModel() {
         const loader = new GLTFLoader();
-        loader.load('../models/ship_x.glb', (gltf) => {
+        loader.load('../../assets/models/ship_x.glb', (gltf) => {
             this.mesh = gltf.scene;
             this.mesh.scale.set(this.scale.x, this.scale.y, this.scale.z);
             this.mesh.position.set(this.position.x, this.position.y, this.position.z);

@@ -8,7 +8,7 @@ function animate() {
     requestAnimationFrame(animate);
     
     // Update game logic
-    game.update();
+    game.animate();
     
     // Update controls
     controls.update();

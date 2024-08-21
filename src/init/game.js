@@ -1,13 +1,9 @@
-import { Scene } from 'three/src/scenes/Scene.js'
-import { GLTFLoader, Sky, Water } from 'three/examples/jsm/Addons.js'
 import { DirectionalLight } from 'three/src/lights/DirectionalLight.js'
 import { MathUtils } from 'three/src/math/MathUtils.js'
 import { initializeGame } from './init.js'
 import { setupControls, keys } from '../engine/controls.js'
-import { createEnemy, createCoin, createDolphin } from '../engine/createObstacle.js'
+import { createEnemy, createCoin } from '../engine/createObstacle.js'
 import * as THREE from 'three';
-import { PlaneGeometry, PMREMGenerator, RepeatWrapping, TextureLoader, Vector3 } from 'three'
-
 
 export default class Game {
   scene;
@@ -16,7 +12,7 @@ export default class Game {
   controls;
   dolphin;
   ocean;
-  audioManager;
+  //audioManager;
 
   constructor () {
     this.enemies = [];
@@ -29,10 +25,10 @@ export default class Game {
     this._initializeScene()
   }
 
-  _animate(time) {
+  animate() {
     if (!this.renderer) return;
 
-    this.renderer.render(scene, camera);
+    this.renderer.render(this.scene, this.camera);
 
     this.ocean.material.uniforms[ 'time' ].value += 0.006;
 
@@ -48,15 +44,16 @@ export default class Game {
 
     if (keys.space.pressed) this.dolphin.velocity.y = -0.75;
 
-    this.camera.position.set(this.dolphin.position.x, this.dolphin.position.y + 4, this.dolphin.position.z + 8);
+    //this.camera.position.set(this.dolphin.position.x, this.dolphin.position.y + 4, this.dolphin.position.z + 8);
     //camera.lookAt(dolphin.position.x, dolphin.position.y + 2, dolphin.position.z + 5);
+    
     const deltaTime = this.clock.getDelta();
     this.dolphin.update(deltaTime);
     const time = performance.now() * 0.001;
-    //controls.target.set(cube.position.x, cube.position.y, cube.position.z);
+
     this.enemies.forEach(enemy => {
         if (enemy.position.z >= 100) {
-            scene.remove(enemy);
+            this.scene.remove(enemy);
             const index = this.enemies.indexOf(enemy);
             this.enemies.splice(index, 1);
         }
@@ -66,7 +63,8 @@ export default class Game {
             enemy.rotation.z = time * 0.51;
             if (this._boxCollision({ box1: this.dolphin, box2: enemy })) {
                 console.log("Game over chief!");
-                renderer.setAnimationLoop(null);
+                this.scene.remove(this.dolphin.mesh);
+                this.renderer.setAnimationLoop(null);
             }
         }
     });
@@ -89,21 +87,21 @@ export default class Game {
         }
     });
 
-    this.ships.forEach(ship => {
-        if (ship.position.z >= 100) {
-          this.scene.remove(ship);
-            const index = this.enemies.indexOf(ship);
-            this.ships.splice(index, 1);
-        }
-        else {
-          ship.update();
-          //ship.mesh.rotation.z = time * 0.51;
-          if (this._boxCollision({ box1: dolphin, box2: ship })) {
-            console.log("Game over chief!");
-            renderer.setAnimationLoop(null);
-          }
-        }
-    });
+    //this.ships.forEach(ship => {
+    //    if (ship.position.z >= 100) {
+    //      this.scene.remove(ship);
+    //        const index = this.enemies.indexOf(ship);
+    //        this.ships.splice(index, 1);
+    //    }
+    //    else {
+    //      ship.update();
+    //      //ship.mesh.rotation.z = time * 0.51;
+    //      if (this._boxCollision({ box1: this.dolphin, box2: ship })) {
+    //        console.log("Game over chief!");
+    //        this.renderer.setAnimationLoop(null);
+    //      }
+    //    }
+    //});
 
     if (this.frames % this.spawnRate === 0) {
         if (this.spawnRate > 10) this.spawnRate -= 10;
@@ -115,7 +113,7 @@ export default class Game {
         }
         else {
             if(Math.random() > 0.5 && Math.random() < 0.5) {
-                const coin = createCoin(scene);
+                const coin = createCoin(this.scene);
                 this.coins.push(coin);
             }
             //else {
@@ -125,7 +123,7 @@ export default class Game {
         }
             
     }
-    frames++;
+    this.frames++;
   }
 
   //_checkCollisions () {}
@@ -155,13 +153,8 @@ export default class Game {
     this.controls = this.gameInit.controls;
     this.dolphin = this.gameInit.dolphin;
     this.ocean = this.gameInit.ocean;
-    this.audioManager = this.gameInit.audioManager;
+    //this.audioManager = this.gameInit.audioManager;
 
     setupControls();
-    
-    //await this.audioManager.loadBackgroundMusic("../../assets/music/m4.mpeg");
-    //this.audioManager.playBackgroundMusic();
-    // this._createSun(this.scene, this.renderer)
-    // this.scene.add(cube)
   }
 }
