@@ -19,14 +19,14 @@ export const createWater = (scene) => {
         }
     );
     water.rotation.x = -Math.PI / 2;
-    //scene.add(water);
+    scene.add(water);
     return water;
 };
 
 export const createSky = () => {
     const sky = new Sky();
     sky.scale.setScalar(10000);
-    //scene.add(this.sky);
+    scene.add(sky);
 
     const skyUniforms = sky.material.uniforms;
     skyUniforms['turbidity'].value = 10;

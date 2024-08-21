@@ -7,6 +7,6 @@ import Game from './init/Game.js';
 
 
 const game = new Game();
-// const controls = new OrbitControls(game.camera, renderer.domElement)
+const controls = new OrbitControls(game.camera, game.renderer.domElement);
 
 export default game
