@@ -19,18 +19,23 @@ export default class Game {
     this.coins = [];
     this.ships = [];
     this.frames = 0;
+    this.score = 0;
     this.spawnRate = 250;
     this.clock = new THREE.Clock();
     this.gameInit = initializeGame();
     this._initializeScene()
+    this.isRunning = false;
+    this.isPaused = false;
   }
 
   animate() {
-    if (!this.renderer) return;
+    if (!this.renderer || !this.isRunning || this.isPaused) return;
 
     this.renderer.render(this.scene, this.camera);
 
     this.ocean.material.uniforms[ 'time' ].value += 0.006;
+
+    this.camera.position.set(this.dolphin.position.x, this.dolphin.position.y+4, this.dolphin.position.z+8);
 
     // movement update
     this.dolphin.velocity.x = 0; // for every frame, reset velocity
@@ -44,9 +49,6 @@ export default class Game {
 
     if (keys.space.pressed) this.dolphin.velocity.y = -0.75;
 
-    //this.camera.position.set(this.dolphin.position.x, this.dolphin.position.y + 4, this.dolphin.position.z + 8);
-    //camera.lookAt(dolphin.position.x, dolphin.position.y + 2, dolphin.position.z + 5);
-    
     const deltaTime = this.clock.getDelta();
     this.dolphin.update(deltaTime);
     const time = performance.now() * 0.001;
@@ -63,15 +65,13 @@ export default class Game {
             enemy.rotation.z = time * 0.51;
             if (this._boxCollision({ box1: this.dolphin, box2: enemy })) {
                 console.log("Game over chief!");
-                this.scene.remove(this.dolphin.mesh);
-                this.renderer.setAnimationLoop(null);
+                this.stop();
             }
         }
     });
 
     this.coins.forEach(coin => {
         if (coin.position.z >= 100) {
-            //scene.remove(coin);
             coin.removeCoin();
             const index = this.coins.indexOf(coin);
             this.coins.splice(index, 1);
@@ -82,26 +82,11 @@ export default class Game {
                 console.log("Wabamba akfani");
                 coin.removeCoin();
                 const index = this.coins.indexOf(coin);
+                this.incrementScore();
                 this.coins.splice(index, 1);
             }
         }
     });
-
-    //this.ships.forEach(ship => {
-    //    if (ship.position.z >= 100) {
-    //      this.scene.remove(ship);
-    //        const index = this.enemies.indexOf(ship);
-    //        this.ships.splice(index, 1);
-    //    }
-    //    else {
-    //      ship.update();
-    //      //ship.mesh.rotation.z = time * 0.51;
-    //      if (this._boxCollision({ box1: this.dolphin, box2: ship })) {
-    //        console.log("Game over chief!");
-    //        this.renderer.setAnimationLoop(null);
-    //      }
-    //    }
-    //});
 
     if (this.frames % this.spawnRate === 0) {
         if (this.spawnRate > 10) this.spawnRate -= 10;
@@ -116,17 +101,67 @@ export default class Game {
                 const coin = createCoin(this.scene);
                 this.coins.push(coin);
             }
-            //else {
-            //    const ship = createShip(scene);
-            //    ships.push(ship);
-            //}
         }
-            
+
     }
     this.frames++;
   }
 
-  //_checkCollisions () {}
+  start() {
+    if (!this.isRunning) {
+      this.isRunning = true;
+      this.isPaused = false;
+      this.clock.start();
+      this.renderer.setAnimationLoop(() => this.animate());
+      this.createScoreDisplay();
+      this.audioManager.playBackgroundMusic();
+    }
+  }
+
+  pause() {
+    if (this.isRunning && !this.isPaused) {
+      this.isPaused = true;
+      console.log(this.dolphin.mesh);
+      console.log(this.enemies[0]);
+      this.clock.stop();
+    }
+  }
+
+  resume() {
+    if (this.isRunning && this.isPaused) {
+      this.isPaused = false;
+      
+      this.clock.start();
+    }
+  }
+
+  stop() {
+    this.isRunning = false;
+    this.isPaused = false;
+    this.clock.stop();
+    this.renderer.setAnimationLoop(null);
+
+    this.enemies.forEach(enemy => {
+      this.scene.remove(enemy);
+    });
+
+    this.coins.forEach(coin => {
+      this.scene.remove(coin.mesh);
+    });
+
+    this.audioManager.stopBackgroundMusic();
+
+    this.removeScoreDisplay();
+
+    this.enemies = [];
+    this.coins = [];
+    this.ships = [];
+    this.frames = 0;
+    this.spawnRate = 250;
+    this.score = 0;
+    this.clock = new THREE.Clock();
+  }
+
   _boxCollision = ({ box1, box2 }) => {
     const xCollision = box1.right >= box2.left && box1.left <= box2.right;
     const yCollision = box1.bottom + box1.velocity.y <= box2.top && box1.top >= box2.bottom;
@@ -141,11 +176,6 @@ export default class Game {
     return xCollision && yCollision && zCollision;
   }
 
-  _updateStatistics () {}
-
-  _endGame () {}
-
-
   _initializeScene = async () => {
     this.scene = this.gameInit.scene;
     this.camera = this.gameInit.camera;
@@ -153,8 +183,39 @@ export default class Game {
     this.controls = this.gameInit.controls;
     this.dolphin = this.gameInit.dolphin;
     this.ocean = this.gameInit.ocean;
-    //this.audioManager = this.gameInit.audioManager;
+    this.audioManager = this.gameInit.audioManager;
+
+    await this.audioManager.loadBackgroundMusic("../../assets/music/m4.mpeg");
+    this.audioManager.playBackgroundMusic();
 
     setupControls();
+  }
+
+  createScoreDisplay() {
+    this.scoreElement = document.createElement('div');
+    this.scoreElement.style.position = 'absolute';
+    this.scoreElement.style.top = '10px';
+    this.scoreElement.style.right = '10px';
+    this.scoreElement.style.fontSize = '24px';
+    this.scoreElement.style.color = 'white';
+    this.updateScoreDisplay();
+    document.body.appendChild(this.scoreElement);
+  }
+
+  updateScoreDisplay() {
+    if (this.scoreElement) {
+      this.scoreElement.textContent = `Score: ${this.score}`;
+    }
+  }
+
+  removeScoreDisplay() {
+    if (this.scoreElement && this.scoreElement.parentNode) {
+      this.scoreElement.parentNode.removeChild(this.scoreElement);
+    }
+  }
+
+  incrementScore() {
+    this.score++;
+    this.updateScoreDisplay();
   }
 }

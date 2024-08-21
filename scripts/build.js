@@ -51,7 +51,7 @@ const assetPlugin = {
 }
 
 build({
-  entryPoints: ['./src/index.js', './src/gui.js'],
+  entryPoints: ['./src/index.js'],
   outdir: 'dist',
   bundle: true,
   plugins: [htmlPlugin, cssPlugin, assetPlugin],

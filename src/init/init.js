@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js'
-//import { AudioManager } from '../engine/audioManager.js';
+import { AudioManager } from '../engine/audioManager.js';
 import { createWater, createSky, createSun } from '../engine/environment.js';
 import { createDolphin } from '../engine/createObstacle.js'
 
@@ -36,7 +36,8 @@ export const initializeGame = () => {
 
     //camera.position.z = 5;
 
-    //const audioManager = new AudioManager();
+    const audioManager = new AudioManager();
+    audioManager.playBackgroundMusic()
 
-    return { scene, camera, renderer, controls, dolphin, ocean, sky };
+    return { scene, camera, renderer, controls, dolphin, ocean, sky, audioManager };
 };

@@ -1,9 +1,11 @@
-import { game, animate } from './loop.js'
+import { game } from './loop.js'
 
-document.body.appendChild(game.renderer.domElement);
+ document.body.appendChild(game.renderer.domElement);
 
-// Start the animation loop
-animate();
+ document.getElementById('startButton').addEventListener('click', () => game.start());
+ document.getElementById('pauseButton').addEventListener('click', () => game.pause());
+ document.getElementById('resumeButton').addEventListener('click', () => game.resume());
+ document.getElementById('stopButton').addEventListener('click', () => game.stop());
 
-// Uncomment this line if you want to show the game overlay
-// document.getElementById('gameOverlay').style.display = 'block';
+ // Start the game
+ game.start();
