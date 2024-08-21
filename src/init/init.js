@@ -1,8 +1,8 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { AudioManager } from '../engine/audioManager.js';
+import { OrbitControls } from 'three/examples/jsm/Addons.js'
+//import { AudioManager } from '../engine/audioManager.js';
 import { createWater, createSky, createSun } from '../engine/environment.js';
-import { createDolphin } from '../models/dolphin.js';
+import { createDolphin } from '../engine/createObstacle.js'
 
 
 export const initializeGame = () => {
@@ -19,7 +19,6 @@ export const initializeGame = () => {
     const controls = new OrbitControls(camera, renderer.domElement);
 
     const dolphin = createDolphin(scene);
-    scene.add(dolphin);
 
     const ocean = createWater(scene);
     scene.add(ocean);
@@ -36,9 +35,9 @@ export const initializeGame = () => {
     scene.add(light);
     scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-    camera.position.z = 5;
+    //camera.position.z = 5;
 
-    const audioManager = new AudioManager();
+    //const audioManager = new AudioManager();
 
-    return { scene, camera, renderer, controls, dolphin, ocean, audioManager };
+    return { scene, camera, renderer, controls, dolphin, ocean };
 };

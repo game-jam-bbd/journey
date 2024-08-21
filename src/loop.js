@@ -9,8 +9,4 @@ import Game from './init/Game.js';
 const game = new Game();
 // const controls = new OrbitControls(game.camera, renderer.domElement)
 
-game.renderer.setAnimationLoop(time => {
-  game._animate(time);
-})
-
 export default game
