@@ -13,11 +13,22 @@
 
 <body>
   <div id="gameControls">
-    <button id="startButton">Start</button>
     <button id="pauseButton">Pause</button>
-    <button id="resumeButton">Resume</button>
+    <!-- <button id="resumeButton">Resume</button> -->
     <button id="stopButton">Stop</button>
   </div>
+  <!-- <section id="loading-screen" class="screen screen--loading">
+    <div class="lds-circle"><div></div></div>
+  </section> -->
+  <section id="landing-screen" class="screen screen--landing">
+    <button id="startButton">Start</button>
+  </section>
+  <section id="pause-screen" class="screen screen--pause">
+    <button id="resumeButton">Resume</button>
+  </section>
+  <section id="over-screen" class="screen screen--over">
+    <h1>Game Over</h1>
+  </section>
   <script type="module" src="./index.js"></script>
 </body>
 
