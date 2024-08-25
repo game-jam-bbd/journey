@@ -8,4 +8,4 @@ import { game } from './loop.js'
  document.getElementById('stopButton').addEventListener('click', () => game.stop());
 
  // Start the game
- game.start();
+//  game.start();

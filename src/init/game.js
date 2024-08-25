@@ -116,6 +116,11 @@ export default class Game {
       this.createScoreDisplay();
       this.audioManager.playBackgroundMusic();
     }
+
+    // document.getElementById('loading-screen').style.display = 'none'
+    document.getElementById('landing-screen').style.display = 'none'
+    document.getElementById('pause-screen').style.display = 'none'
+    document.getElementById('over-screen').style.display = 'none'
   }
 
   pause() {
@@ -125,6 +130,11 @@ export default class Game {
       console.log(this.enemies[0]);
       this.clock.stop();
     }
+
+    // document.getElementById('loading-screen').style.display = 'none'
+    document.getElementById('landing-screen').style.display = 'none'
+    document.getElementById('pause-screen').style.display = 'flex'
+    document.getElementById('over-screen').style.display = 'none'
   }
 
   resume() {
@@ -133,6 +143,11 @@ export default class Game {
       
       this.clock.start();
     }
+
+    // document.getElementById('loading-screen').style.display = 'none'
+    document.getElementById('landing-screen').style.display = 'none'
+    document.getElementById('pause-screen').style.display = 'none'
+    document.getElementById('over-screen').style.display = 'none'
   }
 
   stop() {
@@ -160,6 +175,16 @@ export default class Game {
     this.spawnRate = 250;
     this.score = 0;
     this.clock = new THREE.Clock();
+
+    // document.getElementById('loading-screen').style.display = 'none'
+    document.getElementById('landing-screen').style.display = 'none'
+    document.getElementById('pause-screen').style.display = 'none'
+    document.getElementById('over-screen').style.display = 'flex'
+
+    setTimeout(() => {
+      document.getElementById('landing-screen').style.display = 'flex'
+      document.getElementById('over-screen').style.display = 'none'
+    }, 3000)
   }
 
   _boxCollision = ({ box1, box2 }) => {
